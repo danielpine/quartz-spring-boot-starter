@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.github.danielpine.quartz.starter.QuartzAutoConfiguration
