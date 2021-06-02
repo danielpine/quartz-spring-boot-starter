@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "defaultValue": false,
+      "name": "quartz.enabled",
+      "description": "Enable quartz.",
+      "type": "java.lang.Boolean"
+    }
+  ]
+}

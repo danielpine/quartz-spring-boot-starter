@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @ConditionalOnProperty(prefix = "quartz", value = "enabled", havingValue = "true")
 public class QuartzAutoConfiguration {
     // 配置文件路径
@@ -36,12 +37,6 @@ public class QuartzAutoConfiguration {
     @Resource
     private List<Job> jobs;
 
-    /**
-     * 从quartz.properties文件中读取Quartz配置属性
-     *
-     * @return
-     * @throws IOException
-     */
     @Bean
     public Properties quartzProperties() throws IOException {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
@@ -50,13 +45,6 @@ public class QuartzAutoConfiguration {
         return propertiesFactoryBean.getObject();
     }
 
-    /**
-     * JobFactory与schedulerFactoryBean中的JobFactory相互依赖,注意bean的名称
-     * 在这里为JobFactory注入了Spring上下文
-     *
-     * @param applicationContext
-     * @return
-     */
     @Bean
     public JobFactory buttonJobFactory(ApplicationContext applicationContext) {
         AutoWiredSpringBeanToJobFactory jobFactory = new AutoWiredSpringBeanToJobFactory();
@@ -64,11 +52,6 @@ public class QuartzAutoConfiguration {
         return jobFactory;
     }
 
-    /**
-     * @param buttonJobFactory 为SchedulerFactory配置JobFactory
-     * @return
-     * @throws IOException
-     */
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(JobFactory buttonJobFactory) throws IOException, SchedulerException {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
